@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Whack A Mole!</title>
+  <link href='https://fonts.googleapis.com/css?family=Amatic+SC:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Whack-a-mole! <span class="score">0</span></h1>
+  
+
+  <div class="game">
+    <div class="hole hole1">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole2">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole3">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole4">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole5">
+      <div class="mole"></div>
+    </div>
+    <div class="hole hole6">
+      <div class="mole"></div>
+    </div>
+  </div>
+
+  <button id="btn" class="btn1" onClick="startGame()">Start!</button>
+  <button id="btn" class="btn2" onCLick="stopGame()">Stop!</button>
+
+<script>
+  const holes = document.querySelectorAll('.hole');
+  const scoreBoard = document.querySelector('.score');
+  const moles = document.querySelectorAll('.mole');
+  let lasthole;
+  let timeUp=false;
+  let score=0;
+
+
+
+  function randomTime(min,max){
+    return Math.round(Math.random()*(max-min)+min);
+  }
+
+  function randomHole(holes){
+    //to selecct a random hole
+    const idx=Math.floor(Math.random()*holes.length);
+    const hole=holes[idx];
+    //if same hole is selected
+    if(hole==lasthole){
+        console.log("same hole");
+        //return the hole recursively to check if its same
+        return randomHole(holes);
+    }
+   
+    lasthole=hole;
+    return hole;
+  }
+
+  function peep(){
+    const time=randomTime(200,1000);
+    const hole=randomHole(holes);
+    hole.classList.add('up');               //this will take the mole up and there is selecter up yhat has transition of 0.4s 
+    //to let the mole go down we set timeout function i.e let the mole down after random time
+    setTimeout(()=>{
+        hole.classList.remove('up'); 
+        //to stop the moles from peeping that is stoping the game we will set timeUP=true
+        if(!timeUp) peep(); //if time is not up run peep
+        //else if time is up stop peep i.ew when timeUp=false stop peep
+    },time);
+    }
+
+    function startGame(){
+        //on new game set the score to zero
+        scoreBoard.textContent=0;
+        score=0;
+        timeUp=false;
+        peep();
+
+        // //to stop the game after a specific ampunt of time
+        // setTimeout(()=>{
+        //     timeUp=true;
+        // },2000);               //hwere we take game time=2secs
+    }
+
+
+    function stopGame(){
+        timeUp=true;
+        alert("Your Score is"+score);
+        scoreBoard.textContent=0
+    }
+
+     //to keep the score when hitting the mole we create the bonk function
+     function bonk(e){
+        //is Trusted property of event listener shows that the user actually clicked the mole or the object and not a random click on the page
+        //if the user clicks onsomething else let it be clled cheater
+        if(!e.isTrusted) return; //cheater
+        score++;
+        this.classList.remove('up');
+        scoreBoard.textContent=score;
+     }
+
+     //we add the event listener to check and count the no. of times we bonked on the mole
+     moles.forEach(mole=>mole.addEventListener('click',bonk));
+     
+
+
+</script>
+</body>
+</html>
